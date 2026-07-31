@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="D2RBuffTracker.Views.AboutPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="640" d:DesignWidth="800">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <StackPanel Margin="24,16,24,24" MaxWidth="720" HorizontalAlignment="Left">
+        <TextBlock Text="About" Style="{StaticResource SectionTitle}" FontSize="26" />
+
+        <Border Style="{StaticResource GlassCard}" Margin="0,8,0,14">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="pack://application:,,,/Assets/AppIcon_256.png" Width="64" Height="64" />
+                <StackPanel Margin="16,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="D2R Buff Tracker" FontSize="20" FontWeight="Bold" />
+                    <TextBlock x:Name="VersionText" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource GlassCard}">
+            <StackPanel>
+                <TextBlock Text="Overview" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="Never miss a recast - a lightweight onscreen tracker that gives visibility of your self-cast buff timers supporting every class in Diablo II: Resurrected, including Reign of the Warlock." />
+                <TextBlock Text="How it works" FontWeight="SemiBold" Margin="0,16,0,8" />
+                <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="D2R Buff Tracker works entirely at the Windows input level. You configure the buffs you use and assign each one the key or button you press to cast it. The app then monitors your keyboard, mouse, and controller for those bindings and starts a countdown for the matching buff on a lightweight overlay you position over the game. Tracking is fully automatic - it activates while Diablo II: Resurrected is in focus and pauses the moment you switch away. It is not a mod or a cheat: it never reads from or writes to the game - no memory access, no screen capture, no injection - so it operates entirely outside Diablo II: Resurrected." />
+                <TextBlock Text="Getting started" FontWeight="SemiBold" Margin="0,16,0,8" />
+                <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Text="1. On the Buffs page, pick or create a profile for your character.&#10;2. Add the buffs you want to track from the gallery, or create a custom one.&#10;3. Edit each buff to set its duration and bind the use key you press in game (plus an optional select key).&#10;4. In that same editor, set the amber and red warning thresholds so the icon changes colour as time runs low, and optionally choose a sound for the amber, red and expire moments.&#10;5. While this window is open, a draggable preview of the overlay appears on screen - drag it to where you want it in game.&#10;6. Launch Diablo II: Resurrected. Tracking starts on its own whenever the game is in focus.&#10;&#10;Tip: the Options page has a master 'Play sounds' switch and a cooldown-sweep toggle if you want to turn those effects off for every buff at once." />
+            </StackPanel>
+        </Border>
+
+        <TextBlock Margin="4,14,0,0" FontSize="11" TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                   Text="Not affiliated with or endorsed by Blizzard Entertainment. Diablo II: Resurrected is a trademark of Blizzard Entertainment, Inc." />
+    </StackPanel>
+    </ScrollViewer>
+</UserControl>

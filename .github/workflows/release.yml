@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = if ($env:GITHUB_REF -like 'refs/tags/*') { $env:GITHUB_REF -replace 'refs/tags/','' } else { '${{ github.event.inputs.tag }}' }
+          $ver = $tag.TrimStart('v')
+          "tag=$tag"     | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "version=$ver" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Publish variants
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.version }}'
+          $tag     = '${{ steps.version.outputs.tag }}'
+          $common  = @(
+            'D2RBuffTracker.csproj',
+            '--configuration','Release',
+            '--runtime','win-x64',
+            '-p:PublishSingleFile=true',
+            '-p:IncludeNativeLibrariesForSelfExtract=true',
+            "-p:Version=$version",
+            '-p:IncludeSourceRevisionInInformationalVersion=false'
+          )
+
+          $variants = @(
+            @{ Name = 'win-x64';                          SelfContained = $true;  Sounds = $true  },
+            @{ Name = 'win-x64-nosound';                  SelfContained = $true;  Sounds = $false },
+            @{ Name = 'win-x64-framework-dependent';      SelfContained = $false; Sounds = $true  },
+            @{ Name = 'win-x64-framework-dependent-nosound'; SelfContained = $false; Sounds = $false }
+          )
+
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+
+          foreach ($v in $variants) {
+            $out  = "publish\$($v.Name)"
+            $args = $common + @("--self-contained", $v.SelfContained.ToString().ToLower())
+            if (-not $v.Sounds) { $args += '-p:IncludeSounds=false' }
+            $args += @('--output', $out)
+
+            Write-Host "==> Publishing $($v.Name) (self-contained=$($v.SelfContained), sounds=$($v.Sounds))"
+            dotnet publish @args
+            if ($LASTEXITCODE -ne 0) { throw "Publish failed for $($v.Name)" }
+
+            $zip = "artifacts\D2RBuffTracker-$($v.Name).zip"
+            Compress-Archive -Path "$out\*" -DestinationPath $zip -Force
+          }
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: D2R Buff Tracker ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          draft: false
+          files: artifacts/*.zip
